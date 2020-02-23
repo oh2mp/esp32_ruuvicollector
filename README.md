@@ -9,7 +9,7 @@ the latest stable [Ruuvi firmware](https://lab.ruuvi.com/dfu/). This software is
 version 2.5.9.
 
 ## Hardware prerequisities
-- An ESP32 board
+- An ESP32 board, for example [this](https://www.banggood.com/30Pin-ESP32-Development-Board-WiFibluetooth-Ultra-Low-Power-Consumption-Dual-Cores-ESP-32-ESP-32S-Board-p-1461896.html?p=6H24052869562201510Z)
 - One or more [Ruuvi tags](https://ruuvi.com/)
 
 ## Software prerequisities
