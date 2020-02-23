@@ -8,7 +8,7 @@ row 1: the InfluxDB write url
 
 row 2: username:password for the url. They must be separated by colon.
 
-row 3: measurement name
+row 3: measurement name (set to ruuvi_measurements for compatibility)
 
 All rows must end in newline.
 
@@ -17,7 +17,7 @@ All rows must end in newline.
 ```
 https://influxdb.some.where:8086/write?db=ruuvi
 ruuvi:password123
-ruuvi
+ruuvi_measurements
 ```
 
 ## known_tags.txt
