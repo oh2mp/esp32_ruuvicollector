@@ -215,6 +215,8 @@ void postToInflux() {
 
     char tmpmac[16];
     int postlen = 0;
+    unsigned long connecttime;
+    
     for (uint8_t i = 0; i < MAX_TAGS; i++) {
          if (tagname[i][0] != 0) {
              postlen += strlen(tagdata[i]) + 128;
@@ -264,11 +266,13 @@ void postToInflux() {
           
         if (strcmp(scheme, "https") == 0) {
             if (httpsclient.connect(host, port)) {
+                connecttime = millis();
+                httpsclient.setTimeout(API_TIMEOUT);
                 httpsclient.printf(postdatafmt, path, host, strlen(postdata), base64pass, postdata);
                 Serial.printf(postdatafmt, path, host, strlen(postdata)-1, base64pass, postdata);
 
                 // we reuse variable postmsg here
-                while (httpsclient.connected()) {
+                while (httpsclient.connected() && millis() - connecttime < API_TIMEOUT) {
                     memset(postmsg,0,sizeof(postmsg));
                     httpsclient.read((uint8_t*)postmsg,511);
                     Serial.print(postmsg);
@@ -280,10 +284,12 @@ void postToInflux() {
         }
         if (strcmp(scheme, "http") == 0) {
             if (httpclient.connect(host, port)) {
-                httpsclient.printf(postdatafmt, path, host, strlen(postmsg), base64pass, postmsg);
+                connecttime = millis();
+                httpclient.setTimeout(API_TIMEOUT);
+                httpclient.printf(postdatafmt, path, host, strlen(postmsg), base64pass, postmsg);
 
                 // we reuse variable postmsg here
-                while (httpclient.connected()) {
+                while (httpclient.connected() && millis() - connecttime < API_TIMEOUT) {
                     memset(postmsg,0,sizeof(postmsg));
                     httpclient.read((uint8_t*)postmsg,511);
                     Serial.print(postmsg);
@@ -340,8 +346,6 @@ void setup() {
             Serial.printf("wifi loaded: %s / %s\n",ssid,pass);
         }
         file.close();
-        httpsclient.setTimeout(API_TIMEOUT);
-        httpclient.setTimeout(API_TIMEOUT);
     } else {
         startPortal(); // no settings were found, so start the portal without button
     }
