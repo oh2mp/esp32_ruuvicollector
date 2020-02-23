@@ -37,6 +37,21 @@ upload them with ESP filesystem uploader.
 
 See [FORMATS.md](FORMATS.md).
 
+## Sending to your InfluxDB
+
+If you are using devkit that has a led on GPIO2, the led is lit when the sofware is sending data to InfluxDB. 
+Quite lot of information is sent also to the serial line, so you can test it with the serial monitor of 
+Arduino IDE.
+
+You should have made a database eg. something like this:
+
+```
+CREATE DATABASE ruuvi
+CREATE USER ruuvi WITH PASSWORD 'SomeVeryGoodPasswd'
+GRANT WRITE ON ruuvi TO ruuvi
+
+```
+
 ## Portal mode
 
 You can connect a switch between GPIO32 and GND. If the pin is grounded, the ESP32 starts portal mode.
