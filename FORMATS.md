@@ -22,7 +22,8 @@ ruuvi
 
 ## known_tags.txt
 
-One known tag per row. First the MAC, then TAB, then name and newline.
+One known tag per row. First the MAC address in lowercase hex and colons between bytes, then TAB, 
+then name of the tag and newline.
 
 **Example known_tags.txt file:**
 
