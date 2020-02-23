@@ -10,11 +10,12 @@ version 2.5.9.
 
 ## Hardware prerequisities
 - An ESP32 board, for example [this](https://www.banggood.com/30Pin-ESP32-Development-Board-WiFibluetooth-Ultra-Low-Power-Consumption-Dual-Cores-ESP-32-ESP-32S-Board-p-1461896.html?p=6H24052869562201510Z)
+or [this](https://www.banggood.com/Geekcreit-ESP32-WiFibluetooth-Development-Board-Ultra-Low-Power-Consumption-Dual-Cores-Unsoldered-p-1214159.html?p=6H24052869562201510Z)
 - One or more [Ruuvi tags](https://ruuvi.com/)
 
 ## Software prerequisities
 - [InfluxDB](https://www.influxdata.com/) running somewhere in the internet
-(or another software that can handle similar POST request).
+(or any software that can handle similar POST request).
 - [Arduino IDE](https://www.arduino.cc/en/main/software)
 - [Arduino ESP32 filesystem uploader](https://github.com/me-no-dev/arduino-esp32fs-plugin/)
 
