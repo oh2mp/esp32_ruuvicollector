@@ -1,6 +1,6 @@
 # ESP32 Ruuvi Collector
-A WLAN-configurable Ruuvi Collector that sends data to an InfluxDB. Compatible with famous
-[Ruuvi Collector](https://github.com/Scrin/RuuviCollector) for Raspberry Pi
+Web-configurable Ruuvi Collector that sends data to an InfluxDB. The InfluxDB data model is compatible 
+with famous [Ruuvi Collector](https://github.com/Scrin/RuuviCollector) for Raspberry Pi
 
 This is mostly derived from my [esp8266 onewire to InfluxDB client](https://github.com/oh2mp/esp_1wire_influxdb)
 
@@ -19,6 +19,7 @@ version 2.5.9.
 - [Arduino ESP32 filesystem uploader](https://github.com/me-no-dev/arduino-esp32fs-plugin/)
 
 First change partitioning setting from your Arduino IDE. **Tools -> Partition Scheme -> Huge APP(3MB No OTA)**
+
 Enable PSRAM: **Tools -> PSRAM -> Enabled**
 
 Use the filesystem uploader tool to upload the contents of data library. It contains the html pages for
@@ -26,6 +27,15 @@ the configuring portal.
 
 By default the software assumes that there are maximum 8 Ruuvi tags, but this can be changed from the code,
 see row `#define MAX_TAGS 8`
+
+## Configuration option
+
+The portal saves all configurations onto the SPIFFS filesystem. They are just text files, so you can
+precreate them and then your ESP32 Ruuvi Collector is preconfigured and you dont' have to use the portal
+at all. Just place yout configuration files into the data directory along the html files and 
+upload them with ESP filesystem uploader.
+
+See [FORMATS.md](FORMATS.md).
 
 ## Portal mode
 
