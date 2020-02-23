@@ -16,7 +16,7 @@ All rows must end in newline.
 
 ```https://influxdb.some.where:8086/write?db=ruuvi
 ruuvi:password123
-ruuvi``'
+ruuvi```
 
 ## known_tags.txt
 
