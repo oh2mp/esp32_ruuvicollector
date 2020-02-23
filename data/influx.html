@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<br />
+<form method="POST" action="/saveinfl">
+<table>
+
+<tr><td>InfluxDB write url (including db)<br />
+<input type="text" name="url" maxlength="127" value="###URL###"></td></tr>
+<tr><td><br />InfluxDB user:pass for writing<br />
+<input type="text" name="userpass" maxlength="63" pattern=".*:.*" value="###USERPASS###"></td></tr>
+<tr><td><br />InfluxDB measurement name<br />
+<input type="text" name="idbm" maxlength="31" value="###IDBM###"></td></tr>
+</table>
+<br />
+<table>
+<tr><td class="even"><input type="submit" value="save"></td>
+<td class="even"><a class="fakebutton" href="./">cancel</a></td></tr>
+<tr><td colspan=2><br /><br />
+User and password must<br />be set in format <i>user:pass</i>
+</td></tr>
+
+</table>
+</form>
+</body>
+</html>
+
