@@ -46,5 +46,6 @@ There's almost no sanity checks for the data sent from the forms. This is not a 
 want to mess up your board or make a denial of service to it using eg. buffer overflows, feel free to do so.
 
 ### Sample screenshots from the portal
-![screenshot](screenshot.jpg)
+![screenshot1](screenshot1.jpg)
 ![screenshot2](screenshot2.jpg)
+![screenshot3](screenshot3.jpg)
