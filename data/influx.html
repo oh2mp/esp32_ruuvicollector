@@ -15,13 +15,16 @@
 <input type="text" name="userpass" maxlength="63" pattern=".*:.*" value="###USERPASS###"></td></tr>
 <tr><td><br />InfluxDB measurement name<br />
 <input type="text" name="idbm" maxlength="31" value="###IDBM###"></td></tr>
+<tr><td><br />Send interval in minutes<br />
+<input type="text" name="interval" pattern="[0-9]{0,4}" value="###INTERVAL###"></td></tr>
 </table>
 <br />
 <table>
 <tr><td class="even"><input type="submit" value="save"></td>
 <td class="even"><a class="fakebutton" href="./">cancel</a></td></tr>
-<tr><td colspan=2><br /><br />
-User and password must<br />be set in format <i>user:pass</i>
+<tr><td colspan=2>
+User and password must<br />be set in format <i>user:pass</i><br /><br />
+Interval 0 = approx every 10s
 </td></tr>
 
 </table>

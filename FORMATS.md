@@ -10,6 +10,8 @@ row 2: username:password for the url. They must be separated by colon.
 
 row 3: measurement name (set to ruuvi_measurements for compatibility)
 
+row 4: post interval in minutes. 0 = all the time, practically approximately every 10s.
+
 All rows must end in newline.
 
 **Example influxdb.txt file:**
@@ -18,6 +20,7 @@ All rows must end in newline.
 https://influxdb.some.where:8086/write?db=ruuvi
 ruuvi:password123
 ruuvi_measurements
+0
 ```
 
 ## known_tags.txt

@@ -12,6 +12,7 @@
 #include <WiFiClient.h>
 #include <WebServer.h>
 #include <SPIFFS.h>
+#include <time.h>
 
 #include "strutils.h"
 
@@ -21,7 +22,7 @@
 #include <BLEAdvertisedDevice.h>
 
 #define APREQUEST 32            // grounding GPIO32 starts portal
-#define APTIMEOUT 180000        // Portal timeout
+#define APTIMEOUT 180000        // Portal timeout. Reboot after ms if no activity.
 #define LED 2                   // Onboard led
 #define MAX_TAGS 8
 
@@ -34,6 +35,9 @@ int tagrssi[MAX_TAGS];          // RSSI for each tag
 char measurement[32];           // measurement name for InfluxDB
 char userpass[67];              // user:pass for InfluxDB
 char base64pass[89];            // user:pass base64 encoded
+int  interval = 0;              // POST interval in milliseconds
+                                //  0 = ASAP, that is practically approx 10s.
+unsigned long last_duty = 0;
 
 url_info urlp;
 char url[128];
@@ -61,12 +65,12 @@ const int API_TIMEOUT = 4000; // timeout in milliseconds for http/https client
 */
 const char fmt3[] = "temperature=%.02f,humidity=%.01f,pressure=%.02f,"\
                     "accelerationX=%.03f,accelerationY=%.03f,accelerationZ=%.03f,"\
-                    "batteryVoltage=%.3f,rssi=%d";
+                    "batteryVoltage=%.3f,rssi=%di";
 
 const char fmt5[] = "temperature=%.02f,humidity=%.02f,pressure=%.02f,"\
                     "accelerationX=%.03f,accelerationY=%.03f,accelerationZ=%.03f,"\
-                    "batteryVoltage=%.03f,txPower=%d,rssi=%d,"\
-                    "movementCounter=%d,measurementSequenceNumber=%d\n";
+                    "batteryVoltage=%.03f,txPower=%di,rssi=%di,"\
+                    "movementCounter=%di,measurementSequenceNumber=%di\n";
 
 /* -------------------------------------------------------------------------------
  * Parse ruuvi format v3 (RAWv1) into a char array.
@@ -326,7 +330,13 @@ void setup() {
         trimr(userpass);
         file.readBytesUntil('\n', measurement, 32);
         trimr(measurement);
+        char intervalstr[8];
+        file.readBytesUntil('\n', intervalstr, 8);
         file.close();
+        
+        interval = atoi(intervalstr);
+        Serial.printf("Post interval: %d minutes\n",interval);
+        
         b64_encode(userpass,base64pass, strlen(userpass));
     }
 
@@ -352,7 +362,7 @@ void setup() {
     // handle the InfluxDB url
     if (url[0] == 'h') {
         split_url(&urlp, url);
-                
+
         Serial.printf("scheme %s\nhost %s\nport %d\npath %s\n\n",urlp.scheme, urlp.hostn, urlp.port, urlp.path);
 
         strcpy(scheme, urlp.scheme);
@@ -372,15 +382,28 @@ void setup() {
 
 /* ------------------------------------------------------------------------------- */
 void loop() {
+    struct tm* tm;
+    time_t lt;
+    time(&lt);
+    tm = localtime(&lt);
 
-    if (int(millis()/1000) % 10 == 0 && portal_timer == 0) {
-        BLEScanResults foundDevices = blescan->start(5, false);
-        blescan->clearResults();
-    }
-    if (int(millis()/1000) % 10 == 6 && portal_timer == 0) {
-        postToInflux();
-    }
-  
+    if (tm->tm_hour*60+tm->tm_min == interval || tm->tm_hour + tm->tm_min + tm->tm_sec == 0) {
+
+        if ((tm->tm_sec == 0 || interval == 0) && portal_timer == 0) {
+            timeval epoch = {0, 0};          // A little "misuse" of RTC, but we don't need it
+            const timeval *tv = &epoch;
+            settimeofday(tv, NULL);
+
+            /* Current official Ruuvi firmware (v 2.5.9) https://lab.ruuvi.com/dfu/ broadcasts 
+             * in every 6425ms in RAWv2 mode, so 9 seconds should be enough to hear all tags 
+             * unless you have really many.
+             */
+            BLEScanResults foundDevices = blescan->start(9, false);
+            blescan->clearResults();
+            
+            postToInflux();
+        }
+    }  
     if (portal_timer > 0) { // are we in portal mode?
         server.handleClient();
         if (int(millis()%1000) < 500) {
@@ -415,7 +438,8 @@ void startPortal() {
     }
     Serial.print("\nListening 10 seconds for new tags...\n");
     digitalWrite(LED, HIGH);
-    // blescan = BLEDevice::getScan();
+
+    // First listen 10 seconds to find new tags.
     blescan->setAdvertisedDeviceCallbacks(new ScannedDeviceCallbacks());
     blescan->setActiveScan(true);
     blescan->setInterval(100);
@@ -477,6 +501,7 @@ void httpInflux() {
     html.replace("###URL###", String(url));
     html.replace("###USERPASS###", String(userpass));
     html.replace("###IDBM###", String(measurement));
+    html.replace("###INTERVAL###", String(interval));
        
     server.send(200, "text/html; charset=UTF-8", html);
 }
@@ -490,6 +515,7 @@ void httpSaveInflux() {
     file.printf("%s\n",server.arg("url").c_str());
     file.printf("%s\n",server.arg("userpass").c_str());
     file.printf("%s\n",server.arg("idbm").c_str());
+    file.printf("%s\n",server.arg("interval").c_str());
     file.close();
 
     // reread
@@ -500,6 +526,9 @@ void httpSaveInflux() {
     trimr(userpass);
     file.readBytesUntil('\n', measurement, 32);
     trimr(measurement);
+    char intervalstr[8];
+    file.readBytesUntil('\n', intervalstr, 8);
+    interval = atoi(intervalstr);
     file.close();
 
     file = SPIFFS.open("/ok.html", "r");
@@ -681,6 +710,11 @@ void httpBoot() {
     server.sendHeader("Refresh", "2;url=about:blank");
     server.send(200, "text/html; charset=UTF-8", html);
     delay(1000);
+    
+    timeval epoch = {0, 0}; // clear clock
+    const timeval *tv = &epoch;
+    settimeofday(tv, NULL);
+
     ESP.restart();
 }
 /* ------------------------------------------------------------------------------- */
