@@ -400,8 +400,9 @@ void loop() {
              */
             BLEScanResults foundDevices = blescan->start(9, false);
             blescan->clearResults();
-            
+            delay(250);
             postToInflux();
+            delay(250);
         }
     }  
     if (portal_timer > 0) { // are we in portal mode?
