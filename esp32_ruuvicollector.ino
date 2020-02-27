@@ -97,27 +97,23 @@ void parse_ruuvi_v3(char* rdata, const char* mfdata, const char* mac, int rssi) 
 */
 
 void parse_ruuvi_v5(char* rdata, const char* mfdata, const char* mac, int rssi) {
-
-    unsigned short foo; // temporary var
     memset(rdata,0,sizeof(rdata));
+
+    short temperature = ((short)mfdata[3]<<8) | (unsigned short)mfdata[4];
+    short humidity    = ((short)mfdata[5]<<8) | (unsigned short)mfdata[6];
+    float pressure    = ((unsigned short)mfdata[7]<<8)  + (unsigned short)mfdata[8] + 50000;
     
-    double temperature = (((unsigned short)mfdata[3]<<8) + (unsigned short)mfdata[4]) * 0.005;
-    double humidity    = (((unsigned short)mfdata[5]<<8) + (unsigned short)mfdata[6]) * 0.0025;
-    double pressure    = ((unsigned short)mfdata[7]<<8)  + (unsigned short)mfdata[8] + 50000;
-
-    short accelX  = ((unsigned short)mfdata[9]<<8)  + (unsigned short)mfdata[10];
-    short accelY  = ((unsigned short)mfdata[11]<<8) + (unsigned short)mfdata[12];
-    short accelZ  = ((unsigned short)mfdata[13]<<8) + (unsigned short)mfdata[14];
-    double totalAcc = sqrt(accelX*accelX + accelY*accelY + accelZ*accelZ);
-
-    foo = ((unsigned short)mfdata[15] << 8) + (unsigned short)mfdata[16];
-    double voltage = ((double)foo / 32  + 1600)/1000;
+    short accelX  = ((short)mfdata[9]<<8)  | (short)mfdata[10];
+    short accelY  = ((short)mfdata[11]<<8) | (short)mfdata[12];
+    short accelZ  = ((short)mfdata[13]<<8) | (short)mfdata[14];
+    
+    unsigned short foo = ((unsigned short)mfdata[15] << 8) + (unsigned short)mfdata[16];
+    float voltage = ((double)foo / 32  + 1600)/1000;
     short power = (((mfdata[16] & 0x1f)*2)-40);
     unsigned short seqnumber = ((unsigned short)mfdata[18] << 8) + (unsigned short)mfdata[19];
 
-    // this format is supposed to be compatible with Ruuvicollector
-    sprintf(rdata,fmt5,temperature,humidity,pressure/100,
-            (double)accelX/1000,(double)accelY/1000,(double)accelZ/1000,
+    sprintf(rdata,fmt5,(float)temperature*0.005,(float)humidity*0.0025,pressure/100,
+            (float)accelX/1000,(float)accelY/1000,(float)accelZ/1000,
             voltage,power,rssi,(unsigned short)(mfdata[17]),seqnumber);
 }
 
