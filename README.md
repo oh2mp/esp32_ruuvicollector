@@ -75,3 +75,10 @@ want to mess up your board or make a denial of service to it using eg. buffer ov
 ![screenshot1](s/screenshot1.jpg)
 ![screenshot2](s/screenshot2.jpg)
 ![screenshot3](s/screenshot3.jpg)
+
+### Thanks
+
+- [Ruuvi Innovations](https://ruuvi.com/) for excellent sensor tags
+- [Espressif Systems](https://www.espressif.com/) for ESP hardware
+- [Tapio OH2TH](https://github.com/oh2th) for software testing help
+
