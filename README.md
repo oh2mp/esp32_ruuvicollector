@@ -61,7 +61,7 @@ The pin can be also changed from the code, see row `#define APREQUEST 32`
 In the start of portal mode the ESP32 is listening 10 seconds for new tags. During that period
 the onboard LED is lit and WiFi AP is not listening yet.
 
-When your board is ready to connect via WiFi, it blinks the onboard LED at CPIO2. Take your phone and connect to 
+When your board is ready to connect via WiFi, it blinks the onboard LED on GPIO2. Take your phone and connect to 
 WiFi network **ESP32 Ruuvi Collector**. Accept that there's no internet connection and no encryption.
 
 Open your browser and go to `http://192.168.4.1/`
