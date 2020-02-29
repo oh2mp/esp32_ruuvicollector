@@ -100,7 +100,7 @@ void parse_ruuvi_v5(char* rdata, const char* mfdata, const char* mac, int rssi) 
     memset(rdata,0,sizeof(rdata));
 
     short temperature = ((short)mfdata[3]<<8) | (unsigned short)mfdata[4];
-    short humidity    = ((short)mfdata[5]<<8) | (unsigned short)mfdata[6];
+    unsigned short humidity = ((unsigned short)mfdata[5]<<8) | (unsigned short)mfdata[6];
     float pressure    = ((unsigned short)mfdata[7]<<8)  + (unsigned short)mfdata[8] + 50000;
     
     short accelX  = ((short)mfdata[9]<<8)  | (short)mfdata[10];
@@ -423,6 +423,9 @@ void loop() {
 /* ------------------------------------------------------------------------------- */
 /* Portal code begins here
  *  
+ *   Yeah, I know that String objects are pure evil 😈, but this is meant to be
+ *   rebooted immediately after saving all parameters, so it is quite likely that 
+ *   the heap will not fragmentate yet. 
  */
 /* ------------------------------------------------------------------------------- */
 
