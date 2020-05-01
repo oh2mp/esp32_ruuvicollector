@@ -286,7 +286,7 @@ void postToInflux() {
             if (httpclient.connect(host, port)) {
                 connecttime = millis();
                 httpclient.setTimeout(API_TIMEOUT);
-                httpclient.printf(postdatafmt, path, host, strlen(postmsg), base64pass, postmsg);
+                httpclient.printf(postdatafmt, path, host, strlen(postdata), base64pass, postdata);
 
                 // we reuse variable postmsg here
                 while (httpclient.connected() && millis() - connecttime < API_TIMEOUT) {
