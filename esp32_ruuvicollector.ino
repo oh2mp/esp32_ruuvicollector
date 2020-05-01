@@ -65,7 +65,7 @@ const int API_TIMEOUT = 4000; // timeout in milliseconds for http/https client
 */
 const char fmt3[] = "temperature=%.02f,humidity=%.01f,pressure=%.02f,"\
                     "accelerationX=%.03f,accelerationY=%.03f,accelerationZ=%.03f,"\
-                    "batteryVoltage=%.3f,rssi=%di";
+                    "batteryVoltage=%.3f,rssi=%di\n";
 
 const char fmt5[] = "temperature=%.02f,humidity=%.02f,pressure=%.02f,"\
                     "accelerationX=%.03f,accelerationY=%.03f,accelerationZ=%.03f,"\
@@ -286,7 +286,7 @@ void postToInflux() {
             if (httpclient.connect(host, port)) {
                 connecttime = millis();
                 httpclient.setTimeout(API_TIMEOUT);
-                httpclient.printf(postdatafmt, path, host, strlen(postmsg), base64pass, postmsg);
+                httpclient.printf(postdatafmt, path, host, strlen(postdata), base64pass, postdata);
 
                 // we reuse variable postmsg here
                 while (httpclient.connected() && millis() - connecttime < API_TIMEOUT) {
