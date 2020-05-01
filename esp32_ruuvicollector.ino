@@ -312,7 +312,10 @@ void setup() {
 
     Serial.begin(115200);
     Serial.println("\n\nESP32 Ruuvi Collector by OH2MP 2020");
-    
+
+    BLEDevice::init("");
+    blescan = BLEDevice::getScan();
+
     SPIFFS.begin();
 
     loadSavedTags();
@@ -368,12 +371,12 @@ void setup() {
         sprintf(url,"%s://%s:%d%s\0",scheme,host,port,path);
     }
 
-    BLEDevice::init("");
-    blescan = BLEDevice::getScan();
-    blescan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
-    blescan->setActiveScan(true);
-    blescan->setInterval(100);
-    blescan->setWindow(99);
+    if (portal_timer == 0) { // are we not in portal mode?
+        blescan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
+        blescan->setActiveScan(true);
+        blescan->setInterval(100);
+        blescan->setWindow(99);
+    }
 }
 
 /* ------------------------------------------------------------------------------- */
