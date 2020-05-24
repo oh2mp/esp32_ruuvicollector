@@ -112,7 +112,7 @@ void parse_ruuvi_v5(char* rdata, const char* mfdata, const char* mac, int rssi) 
     short power = (((mfdata[16] & 0x1f)*2)-40);
     unsigned short seqnumber = ((unsigned short)mfdata[18] << 8) + (unsigned short)mfdata[19];
 
-    sprintf(rdata,fmt5,(float)temperature*0.005,(float)humidity*0.0025,pressure,
+    sprintf(rdata,fmt5,(float)temperature*0.005,(unsigned int)humidity*0.0025,pressure,
             (float)accelX/1000,(float)accelY/1000,(float)accelZ/1000,
             voltage,power,rssi,(unsigned short)(mfdata[17]),seqnumber);
 }
