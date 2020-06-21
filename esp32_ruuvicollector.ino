@@ -21,7 +21,7 @@
 #include <BLEScan.h>
 #include <BLEAdvertisedDevice.h>
 
-#define APREQUEST 32            // grounding GPIO32 starts portal
+#define APREQUEST 0             // grounding GPIO0 (or pressing boot button) starts portal
 #define APTIMEOUT 180000        // Portal timeout. Reboot after ms if no activity.
 #define LED 2                   // Onboard led
 #define MAX_TAGS 8
@@ -44,6 +44,7 @@ char url[128];
 char scheme[6];
 char host[64];
 char path[64];
+char myhostname[64] = "esp32-ruuvicollector\0"; // default
 uint16_t port;
 
 WiFiMulti WiFiMulti;
@@ -260,6 +261,7 @@ void postToInflux() {
     }
 
     WiFi.mode(WIFI_STA);
+    
     if (WiFiMulti.run() == WL_CONNECTED) {
         Serial.printf("\nConnecting as %s from WiFi %s to %s\npost-data:\n",
                       WiFi.localIP().toString().c_str(),WiFi.SSID().c_str(), url);
@@ -305,7 +307,7 @@ void postToInflux() {
 
 /* ------------------------------------------------------------------------------- */
 void setup() {
-    
+
     pinMode(APREQUEST, INPUT_PULLUP);
     pinMode(LED, OUTPUT);
     digitalWrite(LED, LOW);
@@ -358,6 +360,16 @@ void setup() {
     } else {
         startPortal(); // no settings were found, so start the portal without button
     }
+    if (SPIFFS.exists("/myhostname.txt")) {
+        file = SPIFFS.open("/myhostname.txt", "r");
+        memset(myhostname, '\0', sizeof(myhostname));
+        file.readBytesUntil('\n', myhostname, sizeof(myhostname));
+        file.close();
+    }
+    // https://github.com/espressif/arduino-esp32/issues/2537#issuecomment-508558849
+    WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
+    WiFi.setHostname(myhostname);
+    
     // handle the InfluxDB url
     if (url[0] == 'h') {
         split_url(&urlp, url);
@@ -574,8 +586,15 @@ void httpWifi() {
         }
         file.close();
     }
+    if (SPIFFS.exists("/myhostname.txt")) {
+        file = SPIFFS.open("/myhostname.txt", "r");
+        memset(myhostname, '\0', sizeof(myhostname));
+        file.readBytesUntil('\n', myhostname, sizeof(myhostname));
+        file.close();
+    }
     html.replace("###TABLEROWS###", tablerows);
     html.replace("###COUNTER###", String(counter));
+    html.replace("###MYHOSTNAME###", String(myhostname));
     
     if (counter > 3) {
         html.replace("table-row", "none");
@@ -608,6 +627,13 @@ void httpSaveWifi() {
     }    
     file.close();
 
+    if (server.arg("myhostname").length() > 0) {
+        file = SPIFFS.open("/myhostname.txt", "w");
+        file.print(server.arg("myhostname"));
+        file.print("\n");
+        file.close();
+    }
+    
     file = SPIFFS.open("/ok.html", "r");
     html = file.readString();
     file.close();
