@@ -55,8 +55,8 @@ GRANT WRITE ON ruuvi TO ruuvi
 
 ## Portal mode
 
-You can connect a switch between GPIO32 and GND. If the pin is grounded, the ESP32 starts portal mode.
-The pin can be also changed from the code, see row `#define APREQUEST 32`
+If the GPIO0 is grounded (same as BOOT button is pressed), the ESP32 starts portal mode.
+The pin can be also changed from the code, see row `#define APREQUEST 0`
 
 In the start of portal mode the ESP32 is listening 10 seconds for new tags. During that period
 the onboard LED is lit and WiFi AP is not listening yet.
