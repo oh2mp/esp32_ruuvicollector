@@ -1,4 +1,7 @@
 # ESP32 Ruuvi Collector
+
+__This software is not maintained anymore. I suggest using [OH2MP ESP32 BLE2MQTT](https://github.com/oh2mp/esp32_ble2mqtt) instead.__
+
 Web-configurable Ruuvi Collector that sends data to an InfluxDB. The InfluxDB data model is compatible 
 with famous [Ruuvi Collector](https://github.com/Scrin/RuuviCollector) for Raspberry Pi
 
